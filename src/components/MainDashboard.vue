@@ -20,27 +20,90 @@
 
           <v-card-text>
             <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.id" label="ID Inventaris"></v-text-field>
+              <v-layout row wrap>
+                <v-flex xs12 sm6 md12>
+                  <v-text-field v-model="editedItem.id" label="ID Barang"></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.lab" label="LAB"></v-text-field>
+                <v-flex xs12 sm6 md12>
+                  <v-select
+                    v-model="editedItem.lab"
+                    :items="dropdown_lab"
+                    label="LAB"
+                    required
+                  ></v-select>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.kategori" label="Kategori"></v-text-field>
+                <v-flex xs12 sm6 md12>
+                  <v-select
+                    v-model="editedItem.kategori"
+                    :items="dropdown_kategori"
+                    label="Kategori"
+                    required
+                  ></v-select>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
+                <v-flex xs12 sm6 md12>
                   <v-text-field v-model="editedItem.nama" label="Nama"></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.status" label="Status"></v-text-field>
+                <v-flex xs12 sm6 md12>
+                  <v-select
+                    v-model="editedItem.status"
+                    :items="dropdown_status"
+                    label="Status"
+                    required
+                  ></v-select>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.tgl_masuk" label="Tanggal Masuk"></v-text-field>
+                <v-flex xs12 sm6 md12>
+                  <v-menu
+                    ref="menu"
+                    :close-on-content-click="false"
+                    v-model="menu"
+                    :nudge-right="40"
+                    :return-value.sync="editedItem.tgl_masuk"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="editedItem.tgl_masuk"
+                      label="Tanggal Masuk"
+                      prepend-icon="event"
+                      readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="editedItem.tgl_masuk" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="$refs.menu.save(editedItem.tgl_masuk)">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.tgl_keluar" label="Tanggal Keluar"></v-text-field>
+                <v-flex xs12 sm6 md12>
+                  <v-menu
+                    ref="menu"
+                    :close-on-content-click="false"
+                    v-model="menu"
+                    :nudge-right="40"
+                    :return-value.sync="editedItem.tgl_keluar"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      v-model="editedItem.tgl_keluar"
+                      label="Tanggal Keluar"
+                      prepend-icon="event"
+                      readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="editedItem.tgl_keluar" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="$refs.menu.save(editedItem.tgl_keluar)">OK</v-btn>
+                    </v-date-picker>
+                  </v-menu>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -114,6 +177,17 @@ export default {
     dialog: false,
     selected: [],
     search: '',
+    dropdown_lab: [
+      'IFLAB 1',
+      'IFLAB 2',
+      'IFLAB 3',
+      'IFLAB 4',
+      'IFLAB 5',
+      'ITLAB 1',
+      'ITLAB 2'
+    ],
+    dropdown_kategori: ['PC', 'Monitor', 'Peripherals', 'Meja'],
+    dropdown_status: ['Baik', 'Rusak'],
     headers: [
       {
         text: 'ID Barang',
@@ -132,7 +206,7 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: '',
-      lab: '',
+      lab: null,
       kategori: '',
       nama: '',
       status: '',
