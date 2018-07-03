@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar flat color="white">
-      <v-toolbar-title>My CRUD</v-toolbar-title>
+      <v-toolbar-title>Inventory</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -22,19 +22,25 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.name" label="Dessert name"></v-text-field>
+                  <v-text-field v-model="editedItem.id" label="ID Inventaris"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.calories" label="Calories"></v-text-field>
+                  <v-text-field v-model="editedItem.lab" label="LAB"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.fat" label="Fat (g)"></v-text-field>
+                  <v-text-field v-model="editedItem.kategori" label="Kategori"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.carbs" label="Carbs (g)"></v-text-field>
+                  <v-text-field v-model="editedItem.nama" label="Nama"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.protein" label="Protein (g)"></v-text-field>
+                  <v-text-field v-model="editedItem.status" label="Status"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.tgl_masuk" label="Tanggal Masuk"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.tgl_keluar" label="Tanggal Keluar"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -50,12 +56,12 @@
     </v-toolbar>
     <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="inventory"
       :search="search"
       select-all
       hide-actions
       class="elevation-1"
-      item-key="name"
+      item-key="id"
       v-model="selected"
     >
       <template slot="items" slot-scope="props">
@@ -67,11 +73,13 @@
           ></v-checkbox>
         </td>
         
-        <td>{{ props.item.name }}</td>
-        <td class="text-xs-right">{{ props.item.calories }}</td>
-        <td class="text-xs-right">{{ props.item.fat }}</td>
-        <td class="text-xs-right">{{ props.item.carbs }}</td>
-        <td class="text-xs-right">{{ props.item.protein }}</td>
+        <td>{{ props.item.id }}</td>
+        <td class="text-xs-right">{{ props.item.lab }}</td>
+        <td class="text-xs-right">{{ props.item.kategori }}</td>
+        <td class="text-xs-right">{{ props.item.nama }}</td>
+        <td class="text-xs-right">{{ props.item.status }}</td>
+        <td class="text-xs-right">{{ props.item.tgl_masuk }}</td>
+        <td class="text-xs-right">{{ props.item.tgl_keluar }}</td>
         <td class="justify-center layout px-0">
           <v-icon
             small
@@ -95,6 +103,9 @@
         Your search for "{{ search }}" found no results.
       </v-alert>
     </v-data-table>
+    <span v-for="item in selected" :key="item.id">
+      {{item.id}}
+    </span>
   </div>
 </template>
 <script>
@@ -105,99 +116,108 @@ export default {
     search: '',
     headers: [
       {
-        text: 'Dessert (100g serving)',
+        text: 'ID Barang',
         align: 'left',
-        sortable: false,
-        value: 'name'
+        value: 'id'
       },
-      { text: 'Calories', value: 'calories' },
-      { text: 'Fat (g)', value: 'fat' },
-      { text: 'Carbs (g)', value: 'carbs' },
-      { text: 'Protein (g)', value: 'protein' },
-      { text: 'Actions', value: 'name', sortable: false }
+      { text: 'LAB', value: 'lab' },
+      { text: 'Kategori', value: 'kategori' },
+      { text: 'Nama', value: 'nama' },
+      { text: 'Status', value: 'status' },
+      { text: 'Tanggal Masuk', value: 'tgl_masuk' },
+      { text: 'Tanggal Keluar', value: 'tgl_keluar' },
+      { text: 'Actions', value: 'id', sortable: false }
     ],
-    desserts: [],
+    inventory: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
+      id: '',
+      lab: '',
+      kategori: '',
+      nama: '',
+      status: '',
+      tgl_masuk: '',
+      tgl_keluar: ''
     },
     defaultItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0
+      id: '',
+      lab: '',
+      kategori: '',
+      nama: '',
+      status: '',
+      tgl_masuk: '',
+      tgl_keluar: ''
     }
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close()
+      val || this.close();
     }
   },
 
   created() {
-    this.initialize()
+    this.initialize();
   },
 
   methods: {
     initialize() {
-      this.desserts = [
+      this.inventory = [
         {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0
+          id: 'q8tCmjhzwZ',
+          lab: 'IFLAB 1',
+          kategori: 'PC',
+          nama: 'Volkswagen',
+          status: false,
+          tgl_masuk: '2017-04-11',
+          tgl_keluar: '2018-06-11'
         },
         {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3
+          id: 'LV43o5',
+          lab: 'IFLAB 4',
+          kategori: 'Monitor',
+          nama: 'Hummer',
+          status: true,
+          tgl_masuk: '2017-02-02',
+          tgl_keluar: '2018-06-13'
         }
-      ]
+      ];
     },
 
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
+      this.editedIndex = this.inventory.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialog = true;
     },
 
     deleteItem(item) {
-      const index = this.desserts.indexOf(item)
+      const index = this.inventory.indexOf(item);
       confirm('Are you sure you want to delete this item?') &&
-        this.desserts.splice(index, 1)
+        this.inventory.splice(index, 1);
     },
 
     close() {
-      this.dialog = false
+      this.dialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
     },
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        Object.assign(this.inventory[this.editedIndex], this.editedItem);
       } else {
-        this.desserts.push(this.editedItem)
+        this.inventory.push(this.editedItem);
       }
-      this.close()
+      this.close();
     }
   }
-}
+};
 </script>
