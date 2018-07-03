@@ -32,7 +32,11 @@
         <router-view/>
     </v-content>
     <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2018</span>
+      <v-flex
+      text-xs-center
+      white--text>
+        IFLAB - KP &copy; 2018
+      </v-flex>
     </v-footer>
   </v-app>
 </template>

@@ -122,7 +122,7 @@
       :items="inventory"
       :search="search"
       select-all
-      hide-actions
+      :pagination.sync="pagination"
       class="elevation-1"
       item-key="id"
       v-model="selected"
@@ -166,17 +166,29 @@
         Your search for "{{ search }}" found no results.
       </v-alert>
     </v-data-table>
-    <span v-for="item in selected" :key="item.id">
+    <div class="text-xs-center pt-2">
+      <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
+    </div>
+    <!-- <span v-for="item in selected" :key="item.id">
       {{item.id}}
-    </span>
+    </span> -->
+    <div class="text-xs-center pt-2">
+      <v-btn @click="deleteSelected(selected)" color="red" class="white--text" v-if="selected.length !== 0">Delete</v-btn>
+      <v-btn color="primary" @click.native="toggleOrder">Toggle sort order</v-btn>
+      <v-btn color="primary" @click.native="nextSort">Sort next column</v-btn>
+    </div>
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   data: () => ({
     dialog: false,
     selected: [],
     search: '',
+    pagination: {
+      sortBy: 'tgl_masuk'
+    },
     dropdown_lab: [
       'IFLAB 1',
       'IFLAB 2',
@@ -226,72 +238,253 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
+      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+    },
+    pages() {
+      if (
+        this.pagination.rowsPerPage == null ||
+        this.pagination.totalItems == null
+      )
+        return 0
+
+      return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
     }
   },
 
   watch: {
     dialog(val) {
-      val || this.close();
+      val || this.close()
     }
   },
 
   created() {
-    this.initialize();
+    this.initialize()
   },
 
   methods: {
     initialize() {
       this.inventory = [
         {
-          id: 'q8tCmjhzwZ',
-          lab: 'IFLAB 1',
-          kategori: 'PC',
-          nama: 'Volkswagen',
-          status: false,
-          tgl_masuk: '2017-04-11',
+          id: 'sOvD60',
+          lab: 'IFLAB 3',
+          kategori: 'Peripherals',
+          nama: 'Mercury',
+          status: 'Baik',
+          tgl_masuk: '2017-05-08',
+          tgl_keluar: '2018-06-17'
+        },
+        {
+          id: 'cYRhoWL8FB',
+          lab: 'ITLAB 1',
+          kategori: 'Peripherals',
+          nama: 'Hummer',
+          status: 'Rusak',
+          tgl_masuk: '2017-07-19',
+          tgl_keluar: '2018-06-18'
+        },
+        {
+          id: 'RZb2IVNb1EN',
+          lab: 'ITLAB 2',
+          kategori: 'Monitor',
+          nama: 'GMC',
+          status: 'Rusak',
+          tgl_masuk: '2017-03-24',
           tgl_keluar: '2018-06-11'
         },
         {
-          id: 'LV43o5',
+          id: 'mFxfFRHYGvC',
+          lab: 'IFLAB 3',
+          kategori: 'Peripherals',
+          nama: 'BMW',
+          status: 'Rusak',
+          tgl_masuk: '2017-07-24',
+          tgl_keluar: '2018-06-24'
+        },
+        {
+          id: 'jZh6Ohy',
+          lab: 'IFLAB 5',
+          kategori: 'PC',
+          nama: 'Volvo',
+          status: 'Baik',
+          tgl_masuk: '2017-03-19',
+          tgl_keluar: '2018-06-22'
+        },
+        {
+          id: 'fWXenLrG7',
+          lab: 'ITLAB 1',
+          kategori: 'Monitor',
+          nama: 'Chrysler',
+          status: 'Rusak',
+          tgl_masuk: '2017-02-21',
+          tgl_keluar: '2018-06-10'
+        },
+        {
+          id: 'mmPB4SVIQBC',
+          lab: 'IFLAB 2',
+          kategori: 'Monitor',
+          nama: 'Infiniti',
+          status: 'Baik',
+          tgl_masuk: '2017-03-01',
+          tgl_keluar: '2018-06-12'
+        },
+        {
+          id: 'J0YUShx5kz',
+          lab: 'IFLAB 4',
+          kategori: 'PC',
+          nama: 'Honda',
+          status: 'Baik',
+          tgl_masuk: '2017-06-24',
+          tgl_keluar: '2018-06-29'
+        },
+        {
+          id: 'MdNMT4mE',
+          lab: 'IFLAB 1',
+          kategori: 'PC',
+          nama: 'Mercedes-Benz',
+          status: 'Rusak',
+          tgl_masuk: '2017-04-05',
+          tgl_keluar: '2018-06-22'
+        },
+        {
+          id: 'aY83jfW',
+          lab: 'IFLAB 4',
+          kategori: 'Peripherals',
+          nama: 'Honda',
+          status: 'Baik',
+          tgl_masuk: '2017-03-29',
+          tgl_keluar: '2018-06-17'
+        },
+        {
+          id: '7XWnfaqqEt',
+          lab: 'ITLAB 1',
+          kategori: 'PC',
+          nama: 'Chevrolet',
+          status: 'Baik',
+          tgl_masuk: '2017-05-27',
+          tgl_keluar: '2018-06-29'
+        },
+        {
+          id: 'RaNSxDVo2qNu',
+          lab: 'IFLAB 4',
+          kategori: 'Peripherals',
+          nama: 'Pontiac',
+          status: 'Baik',
+          tgl_masuk: '2017-04-21',
+          tgl_keluar: '2018-06-15'
+        },
+        {
+          id: 'XFByuRzyxao',
+          lab: 'ITLAB 2',
+          kategori: 'Monitor',
+          nama: 'Suzuki',
+          status: 'Baik',
+          tgl_masuk: '2017-06-03',
+          tgl_keluar: '2018-06-26'
+        },
+        {
+          id: 'a0MEVoBJF',
+          lab: 'IFLAB 5',
+          kategori: 'PC',
+          nama: 'Kia',
+          status: 'Rusak',
+          tgl_masuk: '2017-03-27',
+          tgl_keluar: '2018-06-21'
+        },
+        {
+          id: 'o1JGJHFs8UHh',
+          lab: 'ITLAB 1',
+          kategori: 'Monitor',
+          nama: 'Aston Martin',
+          status: 'Rusak',
+          tgl_masuk: '2017-04-02',
+          tgl_keluar: '2018-06-14'
+        },
+        {
+          id: '7jA98t3g19P',
+          lab: 'IFLAB 5',
+          kategori: 'Peripherals',
+          nama: 'Infiniti',
+          status: 'Rusak',
+          tgl_masuk: '2017-03-14',
+          tgl_keluar: '2018-06-25'
+        },
+        {
+          id: 'sLi2Cz',
           lab: 'IFLAB 4',
           kategori: 'Monitor',
-          nama: 'Hummer',
-          status: true,
-          tgl_masuk: '2017-02-02',
-          tgl_keluar: '2018-06-13'
+          nama: 'Dodge',
+          status: 'Baik',
+          tgl_masuk: '2017-02-25',
+          tgl_keluar: '2018-06-22'
+        },
+        {
+          id: 'qGAf2U',
+          lab: 'IFLAB 2',
+          kategori: 'Monitor',
+          nama: 'Pontiac',
+          status: 'Rusak',
+          tgl_masuk: '2017-02-06',
+          tgl_keluar: '2018-06-24'
+        },
+        {
+          id: '7SVMaFa7wJDX',
+          lab: 'IFLAB 1',
+          kategori: 'PC',
+          nama: 'Mitsubishi',
+          status: 'Rusak',
+          tgl_masuk: '2017-02-16',
+          tgl_keluar: '2018-06-24'
+        },
+        {
+          id: 'Lfxtlpj2',
+          lab: 'ITLAB 2',
+          kategori: 'PC',
+          nama: 'Ford',
+          status: 'Baik',
+          tgl_masuk: '2017-08-01',
+          tgl_keluar: '2018-06-20'
         }
-      ];
+      ]
+      // axios.get('https://my.api.mockaroo.com/my_saved_schema.json?key=00599a10')
+      //   .then(response=> {
+      //     this.inventory = response.data
+      //   })
     },
 
     editItem(item) {
-      this.editedIndex = this.inventory.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.editedIndex = this.inventory.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialog = true
     },
-
     deleteItem(item) {
-      const index = this.inventory.indexOf(item);
+      const index = this.inventory.indexOf(item)
       confirm('Are you sure you want to delete this item?') &&
-        this.inventory.splice(index, 1);
+        this.inventory.splice(index, 1)
     },
-
+    deleteSelected(selected) {
+      // this.inventory.filter(item => !selected.includes(item.id))
+      for (let index = 0; index < selected.length; index++) {
+        // const element = array[index];
+        deleteItem(selected)
+        
+      }
+    },
     close() {
-      this.dialog = false;
+      this.dialog = false
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      }, 300)
     },
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.inventory[this.editedIndex], this.editedItem);
+        Object.assign(this.inventory[this.editedIndex], this.editedItem)
       } else {
-        this.inventory.push(this.editedItem);
+        this.inventory.push(this.editedItem)
       }
-      this.close();
+      this.close()
     }
   }
-};
+}
 </script>
