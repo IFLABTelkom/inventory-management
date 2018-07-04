@@ -171,7 +171,11 @@
     <v-divider class="mx-3" inset></v-divider>
     <v-container fluid>
       <v-card>
-      Sort berdasarkan
+      <v-card-title primary-title>
+        <v-flex>
+          <h3 class="text-sm-left">Sort berdasarkan</h3>
+        </v-flex>
+      </v-card-title>
       <v-flex xs12 sm12 md12 lg12 d-flex>
         <v-divider
           class="mx-3"
@@ -507,7 +511,7 @@ export default {
       // for (let index = 0; index < selected.length; index++) {
       //   // const element = array[index];
       //   deleteItem(selected)
-        
+
       // }
       console.log(selected)
     },
