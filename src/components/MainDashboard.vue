@@ -1,5 +1,7 @@
 <template>
   <div>
+    
+    
     <v-toolbar flat color="white">
       <v-toolbar-title>Inventory</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -166,25 +168,68 @@
         Your search for "{{ search }}" found no results.
       </v-alert>
     </v-data-table>
+    <v-divider class="mx-3" inset></v-divider>
+    <v-container fluid>
+      <v-card>
+      Sort berdasarkan
+      <v-flex xs12 sm12 md12 lg12 d-flex>
+        <v-divider
+          class="mx-3"
+          inset
+          vertical
+        ></v-divider>
+        <v-select
+          :items="dropdown_lab"
+          label="LAB"
+          v-model=sort_lab          
+        ></v-select>
+        <v-divider
+          class="mx-3"
+          inset
+          vertical
+        ></v-divider>
+        <v-select
+          :items="dropdown_kategori"
+          label="Kategori"
+          v-model=sort_kategori          
+        ></v-select>
+        <v-divider
+          class="mx-3"
+          inset
+          vertical
+        ></v-divider>
+        <v-select
+          :items="dropdown_status"
+          label="Status"
+          v-model=sort_status          
+        ></v-select>
+        <v-divider
+          class="mx-3"
+          inset
+          vertical
+        ></v-divider>
+      </v-flex>
+    </v-card>
+    </v-container>
+    
     <div class="text-xs-center pt-2">
       <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
     </div>
-    <!-- <span v-for="item in selected" :key="item.id">
-      {{item.id}}
-    </span> -->
-    <div class="text-xs-center pt-2">
-      <v-btn @click="deleteSelected(selected)" color="red" class="white--text" v-if="selected.length !== 0">Delete</v-btn>
-      <v-btn color="primary" @click.native="toggleOrder">Toggle sort order</v-btn>
-      <v-btn color="primary" @click.native="nextSort">Sort next column</v-btn>
-    </div>
+    <span v-for="item in selected" :key="item.id">
+      {{item}}
+    </span>
   </div>
 </template>
 <script>
 import axios from 'axios'
 export default {
   data: () => ({
+    menu: false,
     dialog: false,
     selected: [],
+    sort_lab: null,
+    sort_kategori: null,
+    sort_status: null,
     search: '',
     pagination: {
       sortBy: 'tgl_masuk'
@@ -445,10 +490,6 @@ export default {
           tgl_keluar: '2018-06-20'
         }
       ]
-      // axios.get('https://my.api.mockaroo.com/my_saved_schema.json?key=00599a10')
-      //   .then(response=> {
-      //     this.inventory = response.data
-      //   })
     },
 
     editItem(item) {
@@ -463,11 +504,12 @@ export default {
     },
     deleteSelected(selected) {
       // this.inventory.filter(item => !selected.includes(item.id))
-      for (let index = 0; index < selected.length; index++) {
-        // const element = array[index];
-        deleteItem(selected)
+      // for (let index = 0; index < selected.length; index++) {
+      //   // const element = array[index];
+      //   deleteItem(selected)
         
-      }
+      // }
+      console.log(selected)
     },
     close() {
       this.dialog = false
