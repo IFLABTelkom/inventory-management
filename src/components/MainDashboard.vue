@@ -1,7 +1,5 @@
 <template>
   <div>
-    
-    
     <v-toolbar flat color="white">
       <v-toolbar-title>Inventory</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -19,7 +17,6 @@
           <v-card-title>
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
-
           <v-card-text>
             <v-container grid-list-md>
               <v-layout row wrap>
@@ -110,7 +107,6 @@
               </v-layout>
             </v-container>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
@@ -129,6 +125,7 @@
       item-key="id"
       v-model="selected"
     >
+      <v-progress-linear slot="progress" color="blue" ></v-progress-linear>
       <template slot="items" slot-scope="props">
         <td>
           <v-checkbox
@@ -137,7 +134,6 @@
           hide-details
           ></v-checkbox>
         </td>
-        
         <td>{{ props.item.id }}</td>
         <td class="text-xs-right">{{ props.item.lab }}</td>
         <td class="text-xs-right">{{ props.item.kategori }}</td>
@@ -164,19 +160,15 @@
       <template slot="no-data">
         <v-btn color="primary" @click="initialize">Reset</v-btn>
       </template>
-      <v-alert slot="no-results" :value="true" color="error" icon="warning">
-        Your search for "{{ search }}" found no results.
-      </v-alert>
-    </v-data-table>
-    <v-divider class="mx-3" inset></v-divider>
-    <v-container fluid>
-      <v-card>
-      <v-card-title primary-title>
-        <v-flex>
-          <h3 class="text-sm-left">Sort berdasarkan</h3>
-        </v-flex>
-      </v-card-title>
-      <v-flex xs12 sm12 md12 lg12 d-flex>
+      <template slot="footer">
+        <td colspan="100%">
+        <v-btn color="warning" v-if="selected.length >0">
+          Delete Selected
+        </v-btn>
+        <span v-for="item in selected" :key="item.id">
+        {{item}}
+        </span>
+        <v-flex xs12 sm12 md12 lg12 d-flex>
         <v-divider
           class="mx-3"
           inset
@@ -213,15 +205,19 @@
           vertical
         ></v-divider>
       </v-flex>
-    </v-card>
-    </v-container>
-    
+        </td>
+      </template>
+      <v-alert slot="no-results" :value="true" color="error" icon="warning">
+        Your search for "{{ search }}" found no results.
+      </v-alert>
+    </v-data-table>
+    <v-divider class="mx-3" inset></v-divider>
     <div class="text-xs-center pt-2">
       <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
     </div>
-    <span v-for="item in selected" :key="item.id">
+    <!-- <span v-for="item in selected" :key="item.id">
       {{item}}
-    </span>
+    </span> -->
   </div>
 </template>
 <script>
@@ -284,7 +280,6 @@ export default {
       tgl_keluar: ''
     }
   }),
-
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
@@ -299,17 +294,14 @@ export default {
       return Math.ceil(this.pagination.totalItems / this.pagination.rowsPerPage)
     }
   },
-
   watch: {
     dialog(val) {
       val || this.close()
     }
   },
-
   created() {
     this.initialize()
   },
-
   methods: {
     initialize() {
       this.inventory = [
@@ -507,12 +499,6 @@ export default {
         this.inventory.splice(index, 1)
     },
     deleteSelected(selected) {
-      // this.inventory.filter(item => !selected.includes(item.id))
-      // for (let index = 0; index < selected.length; index++) {
-      //   // const element = array[index];
-      //   deleteItem(selected)
-
-      // }
       console.log(selected)
     },
     close() {
