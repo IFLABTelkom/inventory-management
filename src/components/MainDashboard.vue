@@ -3,13 +3,7 @@
     <v-toolbar flat color="white">
       <v-toolbar-title>Inventory</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="search"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
+      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
         <v-btn slot="activator" color="primary" dark class="mb-2">New Item</v-btn>
@@ -24,83 +18,34 @@
                   <v-text-field v-model="editedItem.id" label="ID Barang"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
-                  <v-select
-                    v-model="editedItem.lab"
-                    :items="dropdown_lab"
-                    label="LAB"
-                    required
-                  ></v-select>
+                  <v-select v-model="editedItem.lab" :items="dropdown_lab" label="LAB" required></v-select>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
-                  <v-select
-                    v-model="editedItem.kategori"
-                    :items="dropdown_kategori"
-                    label="Kategori"
-                    required
-                  ></v-select>
+                  <v-select v-model="editedItem.kategori" :items="dropdown_kategori" label="Kategori" required></v-select>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
                   <v-text-field v-model="editedItem.nama" label="Nama"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
-                  <v-select
-                    v-model="editedItem.status"
-                    :items="dropdown_status"
-                    label="Status"
-                    required
-                  ></v-select>
+                  <v-select v-model="editedItem.status" :items="dropdown_status" label="Status" required></v-select>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
-                  <v-menu
-                    ref="menu"
-                    :close-on-content-click="false"
-                    v-model="menu"
-                    :nudge-right="40"
-                    :return-value.sync="editedItem.tgl_masuk"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
-                  >
-                    <v-text-field
-                      slot="activator"
-                      v-model="editedItem.tgl_masuk"
-                      label="Tanggal Masuk"
-                      prepend-icon="event"
-                      readonly
-                    ></v-text-field>
+                  <v-menu ref="menu_tgl_masuk" :close-on-content-click="false" v-model="menu_tgl_masuk" :nudge-right="40" :return-value.sync="editedItem.tgl_masuk" lazy transition="scale-transition" offset-y full-width min-width="290px">
+                    <v-text-field slot="activator" v-model="editedItem.tgl_masuk" label="Tanggal Masuk" prepend-icon="event" readonly></v-text-field>
                     <v-date-picker v-model="editedItem.tgl_masuk" no-title scrollable>
                       <v-spacer></v-spacer>
-                      <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-                      <v-btn flat color="primary" @click="$refs.menu.save(editedItem.tgl_masuk)">OK</v-btn>
+                      <v-btn flat color="primary" @click="menu_tgl_masuk = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="$refs.menu_tgl_masuk.save(editedItem.tgl_masuk)">OK</v-btn>
                     </v-date-picker>
                   </v-menu>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
-                  <v-menu
-                    ref="menu"
-                    :close-on-content-click="false"
-                    v-model="menu"
-                    :nudge-right="40"
-                    :return-value.sync="editedItem.tgl_keluar"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
-                  >
-                    <v-text-field
-                      slot="activator"
-                      v-model="editedItem.tgl_keluar"
-                      label="Tanggal Keluar"
-                      prepend-icon="event"
-                      readonly
-                    ></v-text-field>
+                  <v-menu ref="menu_tgl_keluar" :close-on-content-click="false" v-model="menu_tgl_keluar" :nudge-right="40" :return-value.sync="editedItem.tgl_keluar" lazy transition="scale-transition" offset-y full-width min-width="290px">
+                    <v-text-field slot="activator" v-model="editedItem.tgl_keluar" label="Tanggal Keluar" prepend-icon="event" readonly></v-text-field>
                     <v-date-picker v-model="editedItem.tgl_keluar" no-title scrollable>
                       <v-spacer></v-spacer>
-                      <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-                      <v-btn flat color="primary" @click="$refs.menu.save(editedItem.tgl_keluar)">OK</v-btn>
+                      <v-btn flat color="primary" @click="menu_tgl_keluar = false">Cancel</v-btn>
+                      <v-btn flat color="primary" @click="$refs.menu_tgl_keluar.save(editedItem.tgl_keluar)">OK</v-btn>
                     </v-date-picker>
                   </v-menu>
                 </v-flex>
@@ -115,24 +60,11 @@
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table
-      :headers="headers"
-      :items="inventory"
-      :search="search"
-      select-all
-      :pagination.sync="pagination"
-      class="elevation-1"
-      item-key="id"
-      v-model="selected"
-    >
-      <v-progress-linear slot="progress" color="blue" ></v-progress-linear>
+    <v-data-table :headers="headers" :items="inventory" :search="search" select-all :pagination.sync="pagination" class="elevation-1" item-key="id" v-model="selected">
+      <v-progress-linear slot="progress" color="blue"></v-progress-linear>
       <template slot="items" slot-scope="props">
         <td>
-          <v-checkbox
-          v-model="props.selected"
-          primary
-          hide-details
-          ></v-checkbox>
+          <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
         </td>
         <td>{{ props.item.id }}</td>
         <td class="text-xs-right">{{ props.item.lab }}</td>
@@ -142,17 +74,10 @@
         <td class="text-xs-right">{{ props.item.tgl_masuk }}</td>
         <td class="text-xs-right">{{ props.item.tgl_keluar }}</td>
         <td class="justify-center layout px-0">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(props.item)"
-          >
+          <v-icon small class="mr-2" @click="editItem(props.item)">
             edit
           </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(props.item)"
-          >
+          <v-icon small @click="deleteItem(props.item)">
             delete
           </v-icon>
         </td>
@@ -162,49 +87,21 @@
       </template>
       <template slot="footer">
         <td colspan="100%">
-        <v-btn color="warning" v-if="selected.length >0">
-          Delete Selected
-        </v-btn>
-        <span v-for="item in selected" :key="item.id">
-        {{item}}
-        </span>
-        <v-flex xs12 sm12 md12 lg12 d-flex>
-        <v-divider
-          class="mx-3"
-          inset
-          vertical
-        ></v-divider>
-        <v-select
-          :items="dropdown_lab"
-          label="LAB"
-          v-model=sort_lab          
-        ></v-select>
-        <v-divider
-          class="mx-3"
-          inset
-          vertical
-        ></v-divider>
-        <v-select
-          :items="dropdown_kategori"
-          label="Kategori"
-          v-model=sort_kategori          
-        ></v-select>
-        <v-divider
-          class="mx-3"
-          inset
-          vertical
-        ></v-divider>
-        <v-select
-          :items="dropdown_status"
-          label="Status"
-          v-model=sort_status          
-        ></v-select>
-        <v-divider
-          class="mx-3"
-          inset
-          vertical
-        ></v-divider>
-      </v-flex>
+          <v-btn color="warning" v-if="selected.length >0">
+            Delete Selected
+          </v-btn>
+          <span v-for="item in selected" :key="item.id">
+            {{item}}
+          </span>
+          <v-flex xs12 sm12 md12 lg12 d-flex>
+            <v-divider class="mx-3" inset vertical></v-divider>
+            <v-select :items="dropdown_lab" label="LAB" v-model=sort_lab></v-select>
+            <v-divider class="mx-3" inset vertical></v-divider>
+            <v-select :items="dropdown_kategori" label="Kategori" v-model=sort_kategori></v-select>
+            <v-divider class="mx-3" inset vertical></v-divider>
+            <v-select :items="dropdown_status" label="Status" v-model=sort_status></v-select>
+            <v-divider class="mx-3" inset vertical></v-divider>
+          </v-flex>
         </td>
       </template>
       <v-alert slot="no-results" :value="true" color="error" icon="warning">
@@ -220,11 +117,13 @@
     </span> -->
   </div>
 </template>
+
 <script>
 import axios from 'axios'
 export default {
   data: () => ({
-    menu: false,
+    menu_tgl_masuk: false,
+    menu_tgl_keluar: false,
     dialog: false,
     selected: [],
     sort_lab: null,
@@ -251,13 +150,35 @@ export default {
         align: 'left',
         value: 'id'
       },
-      { text: 'LAB', value: 'lab' },
-      { text: 'Kategori', value: 'kategori' },
-      { text: 'Nama', value: 'nama' },
-      { text: 'Status', value: 'status' },
-      { text: 'Tanggal Masuk', value: 'tgl_masuk' },
-      { text: 'Tanggal Keluar', value: 'tgl_keluar' },
-      { text: 'Actions', value: 'id', sortable: false }
+      {
+        text: 'LAB',
+        value: 'lab'
+      },
+      {
+        text: 'Kategori',
+        value: 'kategori'
+      },
+      {
+        text: 'Nama',
+        value: 'nama'
+      },
+      {
+        text: 'Status',
+        value: 'status'
+      },
+      {
+        text: 'Tanggal Masuk',
+        value: 'tgl_masuk'
+      },
+      {
+        text: 'Tanggal Keluar',
+        value: 'tgl_keluar'
+      },
+      {
+        text: 'Actions',
+        value: 'id',
+        sortable: false
+      }
     ],
     inventory: [],
     editedIndex: -1,
