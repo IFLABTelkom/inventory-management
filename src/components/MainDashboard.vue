@@ -14,7 +14,10 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout row wrap>
-                <v-flex xs12 sm6 md12>
+                <v-flex v-if="this.editedIndex != -1" xs12 sm6 md12>
+                  <v-text-field disabled v-model="editedItem.id" label="ID Barang"></v-text-field>
+                </v-flex>
+                <v-flex v-else xs12 sm6 md12>
                   <v-text-field v-model="editedItem.id" label="ID Barang"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md12>
@@ -83,7 +86,7 @@
         </td>
       </template>
       <template slot="no-data">
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
+        Tidak ada data.
       </template>
       <template slot="footer">
         <td colspan="100%">
@@ -116,11 +119,15 @@
       {{item}}
     </span> -->
     <span>{{editedItem}}</span>
+    <br>
+    <span>{{editedIndex}}</span>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import db from './firebaseInit'
+
 export default {
   data: () => ({
     menu_tgl_masuk: false,
@@ -226,191 +233,42 @@ export default {
   },
   methods: {
     initialize() {
-      this.inventory = [
-        {
-          id: 'sOvD60',
-          lab: 'IFLAB 3',
-          kategori: 'Peripherals',
-          nama: 'Mercury',
-          status: 'Baik',
-          tgl_masuk: '2017-05-08',
-          tgl_keluar: '2018-06-17'
-        },
-        {
-          id: 'cYRhoWL8FB',
-          lab: 'ITLAB 1',
-          kategori: 'Peripherals',
-          nama: 'Hummer',
-          status: 'Rusak',
-          tgl_masuk: '2017-07-19',
-          tgl_keluar: '2018-06-18'
-        },
-        {
-          id: 'RZb2IVNb1EN',
-          lab: 'ITLAB 2',
-          kategori: 'Monitor',
-          nama: 'GMC',
-          status: 'Rusak',
-          tgl_masuk: '2017-03-24',
-          tgl_keluar: '2018-06-11'
-        },
-        {
-          id: 'mFxfFRHYGvC',
-          lab: 'IFLAB 3',
-          kategori: 'Peripherals',
-          nama: 'BMW',
-          status: 'Rusak',
-          tgl_masuk: '2017-07-24',
-          tgl_keluar: '2018-06-24'
-        },
-        {
-          id: 'jZh6Ohy',
-          lab: 'IFLAB 5',
-          kategori: 'PC',
-          nama: 'Volvo',
-          status: 'Baik',
-          tgl_masuk: '2017-03-19',
-          tgl_keluar: '2018-06-22'
-        },
-        {
-          id: 'fWXenLrG7',
-          lab: 'ITLAB 1',
-          kategori: 'Monitor',
-          nama: 'Chrysler',
-          status: 'Rusak',
-          tgl_masuk: '2017-02-21',
-          tgl_keluar: '2018-06-10'
-        },
-        {
-          id: 'mmPB4SVIQBC',
-          lab: 'IFLAB 2',
-          kategori: 'Monitor',
-          nama: 'Infiniti',
-          status: 'Baik',
-          tgl_masuk: '2017-03-01',
-          tgl_keluar: '2018-06-12'
-        },
-        {
-          id: 'J0YUShx5kz',
-          lab: 'IFLAB 4',
-          kategori: 'PC',
-          nama: 'Honda',
-          status: 'Baik',
-          tgl_masuk: '2017-06-24',
-          tgl_keluar: '2018-06-29'
-        },
-        {
-          id: 'MdNMT4mE',
-          lab: 'IFLAB 1',
-          kategori: 'PC',
-          nama: 'Mercedes-Benz',
-          status: 'Rusak',
-          tgl_masuk: '2017-04-05',
-          tgl_keluar: '2018-06-22'
-        },
-        {
-          id: 'aY83jfW',
-          lab: 'IFLAB 4',
-          kategori: 'Peripherals',
-          nama: 'Honda',
-          status: 'Baik',
-          tgl_masuk: '2017-03-29',
-          tgl_keluar: '2018-06-17'
-        },
-        {
-          id: '7XWnfaqqEt',
-          lab: 'ITLAB 1',
-          kategori: 'PC',
-          nama: 'Chevrolet',
-          status: 'Baik',
-          tgl_masuk: '2017-05-27',
-          tgl_keluar: '2018-06-29'
-        },
-        {
-          id: 'RaNSxDVo2qNu',
-          lab: 'IFLAB 4',
-          kategori: 'Peripherals',
-          nama: 'Pontiac',
-          status: 'Baik',
-          tgl_masuk: '2017-04-21',
-          tgl_keluar: '2018-06-15'
-        },
-        {
-          id: 'XFByuRzyxao',
-          lab: 'ITLAB 2',
-          kategori: 'Monitor',
-          nama: 'Suzuki',
-          status: 'Baik',
-          tgl_masuk: '2017-06-03',
-          tgl_keluar: '2018-06-26'
-        },
-        {
-          id: 'a0MEVoBJF',
-          lab: 'IFLAB 5',
-          kategori: 'PC',
-          nama: 'Kia',
-          status: 'Rusak',
-          tgl_masuk: '2017-03-27',
-          tgl_keluar: '2018-06-21'
-        },
-        {
-          id: 'o1JGJHFs8UHh',
-          lab: 'ITLAB 1',
-          kategori: 'Monitor',
-          nama: 'Aston Martin',
-          status: 'Rusak',
-          tgl_masuk: '2017-04-02',
-          tgl_keluar: '2018-06-14'
-        },
-        {
-          id: '7jA98t3g19P',
-          lab: 'IFLAB 5',
-          kategori: 'Peripherals',
-          nama: 'Infiniti',
-          status: 'Rusak',
-          tgl_masuk: '2017-03-14',
-          tgl_keluar: '2018-06-25'
-        },
-        {
-          id: 'sLi2Cz',
-          lab: 'IFLAB 4',
-          kategori: 'Monitor',
-          nama: 'Dodge',
-          status: 'Baik',
-          tgl_masuk: '2017-02-25',
-          tgl_keluar: '2018-06-22'
-        },
-        {
-          id: 'qGAf2U',
-          lab: 'IFLAB 2',
-          kategori: 'Monitor',
-          nama: 'Pontiac',
-          status: 'Rusak',
-          tgl_masuk: '2017-02-06',
-          tgl_keluar: '2018-06-24'
-        },
-        {
-          id: '7SVMaFa7wJDX',
-          lab: 'IFLAB 1',
-          kategori: 'PC',
-          nama: 'Mitsubishi',
-          status: 'Rusak',
-          tgl_masuk: '2017-02-16',
-          tgl_keluar: '2018-06-24'
-        },
-        {
-          id: 'Lfxtlpj2',
-          lab: 'ITLAB 2',
-          kategori: 'PC',
-          nama: 'Ford',
-          status: 'Baik',
-          tgl_masuk: '2017-08-01',
-          tgl_keluar: '2018-06-20'
-        }
-      ]
+      db
+        .collection('inventory')
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            // console.log(doc.data())
+            const data = {
+              id: doc.data().id,
+              lab: doc.data().lab,
+              kategori: doc.data().kategori,
+              nama: doc.data().nama,
+              status: doc.data().status,
+              tgl_masuk: doc.data().tgl_masuk,
+              tgl_keluar: doc.data().tgl_keluar
+            }
+            this.inventory.push(data)
+          })
+        })
     },
-
     editItem(item) {
+      db
+        .collection('inventory')
+        .where('id', '==', this.editedItem.id)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.update({
+              id: this.editedItem.id,
+              lab: this.editedItem.lab,
+              nama: this.editedItem.nama,
+              status: this.editedItem.status,
+              tgl_masuk: this.editedItem.tgl_masuk,
+              tgl_keluar: this.editedItem.tgl_keluar
+            })
+          })
+        })
       this.editedIndex = this.inventory.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
@@ -431,14 +289,40 @@ export default {
     },
 
     save() {
-      console.log(this.editedItem)
-      alert(this.editedItem)
       if (this.editedIndex > -1) {
+        db
+          .collection('inventory')
+          .where('id', '==', this.editedItem.id)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              doc.ref.update({
+                id: this.editedItem.id,
+                lab: this.editedItem.lab,
+                nama: this.editedItem.nama,
+                kategori: this.editedItem.kategori,
+                status: this.editedItem.status,
+                tgl_masuk: this.editedItem.tgl_masuk,
+                tgl_keluar: this.editedItem.tgl_keluar
+              })
+            })
+          })
+        alert('this is edit')
         Object.assign(this.inventory[this.editedIndex], this.editedItem)
       } else {
         this.inventory.push(this.editedItem)
+        db.collection('inventory').add({
+          id: this.editedItem.id,
+          lab: this.editedItem.lab,
+          nama: this.editedItem.nama,
+          kategori: this.editedItem.kategori,
+          status: this.editedItem.status,
+          tgl_masuk: this.editedItem.tgl_masuk,
+          tgl_keluar: this.editedItem.tgl_keluar
+        })
       }
       this.close()
+      // this.initialize()
     }
   }
 }
