@@ -67,14 +67,14 @@
           <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
         </td>
         <td>{{ props.item.id }}</td>
-        <td class="text-xs-right">{{ props.item.lab }}</td>
-        <td class="text-xs-right">{{ props.item.kategori }}</td>
-        <td class="text-xs-right">{{ props.item.nama }}</td>
-        <td class="text-xs-right">{{ props.item.status }}</td>
-        <td class="text-xs-right">{{ props.item.tgl_masuk }}</td>
-        <td class="text-xs-right">{{ props.item.tgl_keluar }}</td>
+        <td>{{ props.item.lab }}</td>
+        <td>{{ props.item.kategori }}</td>
+        <td>{{ props.item.nama }}</td>
+        <td>{{ props.item.status }}</td>
+        <td>{{ props.item.tgl_masuk }}</td>
+        <td>{{ props.item.tgl_keluar }}</td>
         <td class="justify-center layout px-0">
-          <v-icon small class="mr-2" @click="editItem(props.item)">
+          <v-icon small class="mr-2" @click="editItem(props.item); alert(props.item)">
             edit
           </v-icon>
           <v-icon small @click="deleteItem(props.item)">
@@ -105,7 +105,7 @@
         </td>
       </template>
       <v-alert slot="no-results" :value="true" color="error" icon="warning">
-        Your search for "{{ search }}" found no results.
+        Hasil pencarian "{{ search }}" tidak dapat ditemukan.
       </v-alert>
     </v-data-table>
     <v-divider class="mx-3" inset></v-divider>
@@ -115,6 +115,7 @@
     <!-- <span v-for="item in selected" :key="item.id">
       {{item}}
     </span> -->
+    <span>{{editedItem}}</span>
   </div>
 </template>
 
@@ -416,8 +417,7 @@ export default {
     },
     deleteItem(item) {
       const index = this.inventory.indexOf(item)
-      confirm('Are you sure you want to delete this item?') &&
-        this.inventory.splice(index, 1)
+      confirm('Anda yakin?') && this.inventory.splice(index, 1)
     },
     deleteSelected(selected) {
       console.log(selected)
@@ -431,6 +431,8 @@ export default {
     },
 
     save() {
+      console.log(this.editedItem)
+      alert(this.editedItem)
       if (this.editedIndex > -1) {
         Object.assign(this.inventory[this.editedIndex], this.editedItem)
       } else {
