@@ -58,7 +58,8 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" flat @click.native="save">Save</v-btn>
+            <v-btn :loading="loading" v-if="this.editedIndex != -1" color="blue darken-1" flat @click.native="fsedit">Save</v-btn>
+            <v-btn v-else color="blue darken-1" flat @click.native="save">Save</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -77,10 +78,10 @@
         <td>{{ props.item.tgl_masuk }}</td>
         <td>{{ props.item.tgl_keluar }}</td>
         <td class="justify-center layout px-0">
-          <v-icon small class="mr-2" @click="editItem(props.item); alert(props.item)">
+          <v-icon small class="mr-2" @click="editItem(props.item)">
             edit
           </v-icon>
-          <v-icon small @click="deleteItem(props.item)">
+          <v-icon small @click="deleteItem(props.item); fsdelete(props.item.id)">
             delete
           </v-icon>
         </td>
@@ -90,12 +91,12 @@
       </template>
       <template slot="footer">
         <td colspan="100%">
-          <v-btn color="warning" v-if="selected.length >0">
-            Delete Selected
+          <v-btn color="error" v-if="selected.length >0">
+            Delete
           </v-btn>
-          <span v-for="item in selected" :key="item.id">
+          <!-- <span v-for="item in selected" :key="item.id">
             {{item}}
-          </span>
+          </span> -->
           <v-flex xs12 sm12 md12 lg12 d-flex>
             <v-divider class="mx-3" inset vertical></v-divider>
             <v-select :items="dropdown_lab" label="LAB" v-model=sort_lab></v-select>
@@ -125,11 +126,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import db from './firebaseInit'
 
 export default {
   data: () => ({
+    loading: false,
     menu_tgl_masuk: false,
     menu_tgl_keluar: false,
     dialog: false,
@@ -151,11 +152,10 @@ export default {
       'ITLAB 2'
     ],
     dropdown_kategori: ['PC', 'Monitor', 'Peripherals', 'Meja'],
-    dropdown_status: ['Baik', 'Rusak'],
+    dropdown_status: ['Baik', 'Rusak', 'Out'],
     headers: [
       {
         text: 'ID Barang',
-        align: 'left',
         value: 'id'
       },
       {
@@ -192,7 +192,7 @@ export default {
     editedIndex: -1,
     editedItem: {
       id: '',
-      lab: null,
+      lab: '',
       kategori: '',
       nama: '',
       status: '',
@@ -232,13 +232,23 @@ export default {
     this.initialize()
   },
   methods: {
+    fsdelete(id) {
+      db
+        .collection('inventory')
+        .where('id', '==', id)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete()
+          })
+        })
+    },
     initialize() {
       db
         .collection('inventory')
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            // console.log(doc.data())
             const data = {
               id: doc.data().id,
               lab: doc.data().lab,
@@ -253,22 +263,6 @@ export default {
         })
     },
     editItem(item) {
-      db
-        .collection('inventory')
-        .where('id', '==', this.editedItem.id)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            doc.ref.update({
-              id: this.editedItem.id,
-              lab: this.editedItem.lab,
-              nama: this.editedItem.nama,
-              status: this.editedItem.status,
-              tgl_masuk: this.editedItem.tgl_masuk,
-              tgl_keluar: this.editedItem.tgl_keluar
-            })
-          })
-        })
       this.editedIndex = this.inventory.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
@@ -290,24 +284,6 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        db
-          .collection('inventory')
-          .where('id', '==', this.editedItem.id)
-          .get()
-          .then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              doc.ref.update({
-                id: this.editedItem.id,
-                lab: this.editedItem.lab,
-                nama: this.editedItem.nama,
-                kategori: this.editedItem.kategori,
-                status: this.editedItem.status,
-                tgl_masuk: this.editedItem.tgl_masuk,
-                tgl_keluar: this.editedItem.tgl_keluar
-              })
-            })
-          })
-        alert('this is edit')
         Object.assign(this.inventory[this.editedIndex], this.editedItem)
       } else {
         this.inventory.push(this.editedItem)
@@ -323,6 +299,31 @@ export default {
       }
       this.close()
       // this.initialize()
+    },
+    fsedit() {
+      this.loading = true
+      db
+        .collection('inventory')
+        .where('id', '==', this.editedItem.id)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.set({
+              id: this.editedItem.id,
+              lab: this.editedItem.lab,
+              nama: this.editedItem.nama,
+              kategori: this.editedItem.kategori,
+              status: this.editedItem.status,
+              tgl_masuk: this.editedItem.tgl_masuk,
+              tgl_keluar: this.editedItem.tgl_keluar
+            })
+          })
+        })
+      setTimeout(() => {
+        this.close()
+        this.loading = false
+      }, 150)
+      Object.assign(this.inventory[this.editedIndex], this.editedItem)
     }
   }
 }
