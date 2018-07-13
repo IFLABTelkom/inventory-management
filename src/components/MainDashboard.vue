@@ -92,7 +92,9 @@
       <template slot="footer">
         <td colspan="100%">
           <v-btn color="error" v-if="selected.length >0">
-            Delete
+            <v-icon>
+              delete
+            </v-icon>
           </v-btn>
           <!-- <span v-for="item in selected" :key="item.id">
             {{item}}
@@ -122,6 +124,8 @@
     <span>{{editedItem}}</span>
     <br>
     <span>{{editedIndex}}</span>
+    <br>
+    <span>{{sort_lab}}</span>
   </div>
 </template>
 
@@ -226,6 +230,108 @@ export default {
   watch: {
     dialog(val) {
       val || this.close()
+    },
+    sort_lab(sort_lab) {
+      switch (sort_lab) {
+        case 'IFLAB 1':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+        case 'IFLAB 2':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+        case 'IFLAB 3':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+        case 'IFLAB 4':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+
+        case 'IFLAB 5':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+
+        case 'ITLAB 1':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+
+        case 'ITLAB 2':
+          this.inventory = this.inventory.filter(data =>
+            sort_lab.includes(data.lab)
+          )
+          break
+
+        default:
+          break
+      }
+    },
+    sort_kategori(sort_kategori) {
+      switch (sort_kategori) {
+        case 'PC':
+          this.inventory = this.inventory.filter(data =>
+            sort_kategori.includes(data.kategori)
+          )
+
+          break
+        case 'Monitor':
+          this.inventory = this.inventory.filter(data =>
+            sort_kategori.includes(data.kategori)
+          )
+
+          break
+
+        case 'Peripherals':
+          this.inventory = this.inventory.filter(data =>
+            sort_kategori.includes(data.kategori)
+          )
+
+          break
+
+        case 'Meja':
+          this.inventory = this.inventory.filter(data =>
+            sort_kategori.includes(data.kategori)
+          )
+
+          break
+
+        default:
+          break
+      }
+    },
+    sort_status(sort_status) {
+      switch (sort_status) {
+        case 'Baik':
+          this.inventory = this.inventory.filter(data =>
+            sort_status.includes(data.status)
+          )
+          break
+
+        case 'Rusak':
+          this.inventory = this.inventory.filter(data =>
+            sort_status.includes(data.status)
+          )
+          break
+
+        case 'Out':
+          this.inventory = this.inventory.filter(data =>
+            sort_status.includes(data.status)
+          )
+          break
+
+        default:
+          break
+      }
     }
   },
   created() {
@@ -298,7 +404,6 @@ export default {
         })
       }
       this.close()
-      // this.initialize()
     },
     fsedit() {
       this.loading = true
