@@ -58,7 +58,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" flat @click.native="close">Cancel</v-btn>
-            <v-btn :loading="loading" v-if="this.editedIndex != -1" color="blue darken-1" flat @click.native="fsedit">Save</v-btn>
+            <v-btn :loading="loading" v-if="this.editedIndex != -1" color="blue darken-1" flat @click.native="fs_edit">Save</v-btn>
             <v-btn v-else color="blue darken-1" flat @click.native="save">Save</v-btn>
           </v-card-actions>
         </v-card>
@@ -81,7 +81,7 @@
           <v-icon small class="mr-2" @click="editItem(props.item)">
             edit
           </v-icon>
-          <v-icon small @click="deleteItem(props.item); fsdelete(props.item.id)">
+          <v-icon small @click="deleteItem(props.item); fs_delete(props.item.id)">
             delete
           </v-icon>
         </td>
@@ -95,6 +95,9 @@
             <v-icon>
               delete
             </v-icon>
+          </v-btn>
+          <v-btn v-if="this.sort_lab || this.sort_kategori || this.sort_status != null" @click.native="refresh">
+            <v-icon>refresh</v-icon>
           </v-btn>
           <!-- <span v-for="item in selected" :key="item.id">
             {{item}}
@@ -338,7 +341,13 @@ export default {
     this.initialize()
   },
   methods: {
-    fsdelete(id) {
+    refresh() {
+      ;(this.sort_lab = null),
+        (this.sort_kategori = null),
+        (this.sort_status = null),
+        this.initialize()
+    },
+    fs_delete(id) {
       db
         .collection('inventory')
         .where('id', '==', id)
@@ -350,6 +359,7 @@ export default {
         })
     },
     initialize() {
+      this.inventory.length = 0
       db
         .collection('inventory')
         .get()
@@ -405,7 +415,7 @@ export default {
       }
       this.close()
     },
-    fsedit() {
+    fs_edit() {
       this.loading = true
       db
         .collection('inventory')
@@ -427,7 +437,7 @@ export default {
       setTimeout(() => {
         this.close()
         this.loading = false
-      }, 150)
+      }, 250)
       Object.assign(this.inventory[this.editedIndex], this.editedItem)
     }
   }
