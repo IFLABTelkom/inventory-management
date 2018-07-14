@@ -64,7 +64,7 @@
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="inventory" :search="search" select-all :pagination.sync="pagination" class="elevation-1" item-key="id" v-model="selected">
+    <v-data-table :headers="headers" :items="inventory" :search="search" select-all class="elevation-1" item-key="id" v-model="selected">
       <v-progress-linear slot="progress" color="blue"></v-progress-linear>
       <template slot="items" slot-scope="props">
         <td>
@@ -91,18 +91,12 @@
       </template>
       <template slot="footer">
         <td colspan="100%">
-          <v-btn color="error" v-if="selected.length >0">
-            <v-icon>
-              delete
-            </v-icon>
-          </v-btn>
-          <v-btn v-if="this.sort_lab || this.sort_kategori || this.sort_status != null" @click.native="refresh">
-            <v-icon>refresh</v-icon>
-          </v-btn>
-          <!-- <span v-for="item in selected" :key="item.id">
-            {{item}}
-          </span> -->
-          <v-flex xs12 sm12 md12 lg12 d-flex>
+          <v-flex xs4 sm6 md6 lg6 d-flex>
+            <v-btn :loading="loading_del" color="error" v-if="selected.length >0" @click.native="delete_selected">
+              <v-icon>
+                delete
+              </v-icon>
+            </v-btn>
             <v-divider class="mx-3" inset vertical></v-divider>
             <v-select :items="dropdown_lab" label="LAB" v-model=sort_lab></v-select>
             <v-divider class="mx-3" inset vertical></v-divider>
@@ -110,6 +104,10 @@
             <v-divider class="mx-3" inset vertical></v-divider>
             <v-select :items="dropdown_status" label="Status" v-model=sort_status></v-select>
             <v-divider class="mx-3" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-btn fill-height="true" color="primary" v-if="this.sort_lab || this.sort_kategori || this.sort_status != null" @click.native="refresh">
+              Reset
+            </v-btn>
           </v-flex>
         </td>
       </template>
@@ -117,18 +115,15 @@
         Hasil pencarian "{{ search }}" tidak dapat ditemukan.
       </v-alert>
     </v-data-table>
-    <v-divider class="mx-3" inset></v-divider>
-    <div class="text-xs-center pt-2">
-      <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
-    </div>
+    <!-- <v-divider class="mx-3" inset></v-divider> -->
     <!-- <span v-for="item in selected" :key="item.id">
       {{item}}
     </span> -->
-    <span>{{editedItem}}</span>
+    <!-- <span>{{editedItem}}</span>
     <br>
     <span>{{editedIndex}}</span>
     <br>
-    <span>{{sort_lab}}</span>
+    <span>{{sort_lab}}</span> -->
   </div>
 </template>
 
@@ -138,6 +133,7 @@ import db from './firebaseInit'
 export default {
   data: () => ({
     loading: false,
+    loading_del: false,
     menu_tgl_masuk: false,
     menu_tgl_keluar: false,
     dialog: false,
@@ -146,9 +142,7 @@ export default {
     sort_kategori: null,
     sort_status: null,
     search: '',
-    pagination: {
-      sortBy: 'tgl_masuk'
-    },
+    pagination: {},
     dropdown_lab: [
       'IFLAB 1',
       'IFLAB 2',
@@ -341,6 +335,28 @@ export default {
     this.initialize()
   },
   methods: {
+    delete_selected() {
+      if (confirm('Apakah anda yakin ingin menghapus data yang dipilih?')) {
+        this.loading_del = true
+        for (var i = 0, len = this.selected.length; i < len; i++) {
+          // this.deleteWithoutConfirm(this.selected)
+          db
+            .collection('inventory')
+            .where('id', '==', this.selected[i].id)
+            .get()
+            .then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                doc.ref.delete()
+              })
+            })
+        }
+        setTimeout(() => {
+          this.loading_del = false
+          alert('Data telah berhasil dihapus.')
+          this.initialize()
+        }, 300)
+      }
+    },
     refresh() {
       ;(this.sort_lab = null),
         (this.sort_kategori = null),
@@ -387,8 +403,9 @@ export default {
       const index = this.inventory.indexOf(item)
       confirm('Anda yakin?') && this.inventory.splice(index, 1)
     },
-    deleteSelected(selected) {
-      console.log(selected)
+    deleteWithoutConfirm(item) {
+      const index = this.inventory.indexOf(item)
+      this.inventory.splice(index, 1)
     },
     close() {
       this.dialog = false
