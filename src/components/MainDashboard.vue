@@ -64,8 +64,8 @@
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="inventory" :search="search" select-all class="elevation-1" item-key="id" v-model="selected">
-      <v-progress-linear slot="progress" color="blue"></v-progress-linear>
+    <v-data-table :loading="loading_data" :headers="headers" :items="inventory" :search="search" select-all class="elevation-1" item-key="id" v-model="selected">
+      <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
       <template slot="items" slot-scope="props">
         <td>
           <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
@@ -86,8 +86,11 @@
           </v-icon>
         </td>
       </template>
-      <template slot="no-data">
+      <template v-if="loading_data == false" slot="no-data">
         Tidak ada data.
+      </template>
+      <template v-else slot="no-data">
+        Loading data...
       </template>
       <template slot="footer">
         <td colspan="100%">
@@ -115,15 +118,6 @@
         Hasil pencarian "{{ search }}" tidak dapat ditemukan.
       </v-alert>
     </v-data-table>
-    <!-- <v-divider class="mx-3" inset></v-divider> -->
-    <!-- <span v-for="item in selected" :key="item.id">
-      {{item}}
-    </span> -->
-    <!-- <span>{{editedItem}}</span>
-    <br>
-    <span>{{editedIndex}}</span>
-    <br>
-    <span>{{sort_lab}}</span> -->
   </div>
 </template>
 
@@ -132,7 +126,7 @@ import db from './firebaseInit'
 
 export default {
   data: () => ({
-    loading: false,
+    loading_data: true,
     loading_del: false,
     menu_tgl_masuk: false,
     menu_tgl_keluar: false,
@@ -393,6 +387,9 @@ export default {
             this.inventory.push(data)
           })
         })
+      setTimeout(() => {
+        this.loading_data = false
+      }, 1500)
     },
     editItem(item) {
       this.editedIndex = this.inventory.indexOf(item)
