@@ -347,6 +347,7 @@ export default {
         setTimeout(() => {
           this.loading_del = false
           alert('Data telah berhasil dihapus.')
+          this.selected.length = 0
           this.initialize()
         }, 300)
       }
