@@ -5,12 +5,12 @@ import MainDashboard from '@/components/MainDashboard'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
+  mode: 'history',
+  routes: [{
       path: '/',
       name: 'MainDashboard',
       component: MainDashboard
     },
-    
+
   ]
 })
