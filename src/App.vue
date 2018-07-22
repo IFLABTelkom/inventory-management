@@ -51,7 +51,7 @@
 export default {
   data: () => ({
     drawer: false,
-    signed_in : false
+    signed_in: false
   }),
   props: {
     source: String
