@@ -6,7 +6,9 @@
       <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" max-width="500px">
-        <v-btn slot="activator" color="primary" dark class="mb-2">New Item</v-btn>
+        <v-btn slot="activator" color="primary" dark class="mb-2">
+          <v-icon>add</v-icon>
+        </v-btn>
         <v-card>
           <v-card-title>
             <span class="headline">{{ formTitle }}</span>
@@ -206,7 +208,7 @@ export default {
   }),
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? 'Tambah Barang' : 'Edit Barang'
     },
     pages() {
       if (

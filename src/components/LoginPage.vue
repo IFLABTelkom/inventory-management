@@ -42,6 +42,9 @@
 </template>
 
 <script>
+// import auth from './firebaseAuth'
+import firebase from 'firebase'
+const auth = firebase.auth()
 export default {
   data() {
     return {
@@ -51,7 +54,14 @@ export default {
   },
   methods: {
     sign_in() {
-      console.log(this.email, this.password)
+      auth.signInWithEmailAndPassword(this.email, this.password).then(
+        cred => {
+          this.$router.go({ path: this.$router.path })
+        },
+        err => {
+          alert(err.message)
+        }
+      )
     }
   }
 }
