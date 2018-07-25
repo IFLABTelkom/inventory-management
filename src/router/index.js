@@ -29,7 +29,6 @@ let router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // check if NOT logged in
     if (!firebase.auth().currentUser) {
       next({
         path: '/login',
@@ -38,11 +37,9 @@ router.beforeEach((to, from, next) => {
         }
       })
     } else {
-      // proceed
       next()
     }
   } else if (to.matched.some(record => record.meta.requiresGuest)) {
-    // check if NOT logged in
     if (firebase.auth().currentUser) {
       next({
         path: '/',
@@ -51,7 +48,6 @@ router.beforeEach((to, from, next) => {
         }
       })
     } else {
-      // proceed
       next()
     }
   } else {
@@ -60,4 +56,3 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
-// navigation guard
